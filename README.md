@@ -35,15 +35,23 @@ curl -o CLAUDE.md https://raw.githubusercontent.com/dc-larsen/socket-claude-guar
 
 This tells Claude to run `/socket` before any dependency changes.
 
-### 2. Implement the `/socket` skill (or use Socket CLI directly)
+### 2. Install the `/socket` skill
 
-See [docs/socket-skill-spec.md](docs/socket-skill-spec.md) for the interface specification.
-
-If you have the [Socket CLI](https://docs.socket.dev/docs/socket-cli) installed, you can use it directly:
+Copy the skill to your Claude configuration:
 
 ```bash
-socket npm info <package>
+mkdir -p ~/.claude/skills
+curl -o ~/.claude/skills/socket/SKILL.md --create-dirs \
+  https://raw.githubusercontent.com/dc-larsen/socket-claude-guardrails/main/.claude/skills/socket/SKILL.md
 ```
+
+Now `/socket` is available in Claude Code. It works best with the [Socket CLI](https://docs.socket.dev/docs/socket-cli):
+
+```bash
+npm install -g @socketsecurity/cli
+```
+
+See [docs/socket-skill-spec.md](docs/socket-skill-spec.md) for the full interface specification.
 
 ### 3. Add the CI backstop (optional)
 

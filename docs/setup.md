@@ -18,32 +18,41 @@ Or copy manually from [CLAUDE.md](../CLAUDE.md).
 
 This file tells Claude to run `/socket` before any dependency change.
 
-## Step 2: Implement /socket
+## Step 2: Install the /socket Skill
 
-You have several options:
+Copy the skill to your Claude configuration:
 
-### Option A: Socket CLI (Recommended)
+```bash
+mkdir -p ~/.claude/skills/socket
+curl -o ~/.claude/skills/socket/SKILL.md \
+  https://raw.githubusercontent.com/dc-larsen/socket-claude-guardrails/main/.claude/skills/socket/SKILL.md
+```
 
-Install the Socket CLI:
+Or for project-specific installation:
+
+```bash
+mkdir -p .claude/skills/socket
+curl -o .claude/skills/socket/SKILL.md \
+  https://raw.githubusercontent.com/dc-larsen/socket-claude-guardrails/main/.claude/skills/socket/SKILL.md
+```
+
+### Install Socket CLI (Recommended)
+
+The skill works best with the Socket CLI installed:
 
 ```bash
 npm install -g @socketsecurity/cli
 ```
 
-Then use it directly:
+Verify it works:
 
 ```bash
 socket npm info lodash
-socket npm info lodash --json
 ```
 
-### Option B: Custom Skill
+### Alternative: Manual Checks
 
-Implement the `/socket` skill following [socket-skill-spec.md](socket-skill-spec.md). This gives you more control over the interface and output format.
-
-### Option C: Manual Checks
-
-Use the Socket web interface at [socket.dev](https://socket.dev) to check packages manually. Less automated but requires no setup.
+If you prefer not to install the CLI, the skill will guide you to check packages at [socket.dev](https://socket.dev) manually.
 
 ## Step 3: Add Claude Rules (Optional)
 
