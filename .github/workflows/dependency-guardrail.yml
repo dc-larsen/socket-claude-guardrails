@@ -18,25 +18,21 @@ jobs:
           # Get list of changed files
           CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
 
-          # Define dependency file patterns
-          DEP_FILES="package.json package-lock.json yarn.lock pnpm-lock.yaml \
-                     requirements.txt requirements-dev.txt pyproject.toml poetry.lock \
-                     Pipfile Pipfile.lock setup.py setup.cfg \
-                     Cargo.toml Cargo.lock go.mod go.sum Gemfile Gemfile.lock"
+          # Define dependency file patterns (one per line for clarity)
+          DEP_PATTERNS="package.json|package-lock.json|yarn.lock|pnpm-lock.yaml"
+          DEP_PATTERNS="$DEP_PATTERNS|requirements.txt|requirements-dev.txt|pyproject.toml|poetry.lock"
+          DEP_PATTERNS="$DEP_PATTERNS|Pipfile|Pipfile.lock|setup.py|setup.cfg"
+          DEP_PATTERNS="$DEP_PATTERNS|Cargo.toml|Cargo.lock|go.mod|go.sum|Gemfile|Gemfile.lock"
 
           # Check if any dependency files changed
-          DEPS_CHANGED=false
-          CHANGED_DEPS=""
-          for file in $DEP_FILES; do
-            if echo "$CHANGED" | grep -q "$file"; then
-              DEPS_CHANGED=true
-              CHANGED_DEPS="$CHANGED_DEPS $file"
-            fi
-          done
+          MATCHED=$(echo "$CHANGED" | grep -E "$DEP_PATTERNS" || true)
 
-          echo "deps_changed=$DEPS_CHANGED" >> $GITHUB_OUTPUT
-          if [ "$DEPS_CHANGED" = "true" ]; then
-            echo "Changed dependency files:$CHANGED_DEPS"
+          if [ -n "$MATCHED" ]; then
+            echo "deps_changed=true" >> $GITHUB_OUTPUT
+            echo "Changed dependency files:"
+            echo "$MATCHED"
+          else
+            echo "deps_changed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Verify Socket check in PR description
