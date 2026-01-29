@@ -1,0 +1,76 @@
+name: Dependency Guardrail
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  check-socket:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for dependency file changes
+        id: deps
+        run: |
+          # Get list of changed files
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          # Define dependency file patterns
+          DEP_FILES="package.json package-lock.json yarn.lock pnpm-lock.yaml \
+                     requirements.txt requirements-dev.txt pyproject.toml poetry.lock \
+                     Pipfile Pipfile.lock setup.py setup.cfg \
+                     Cargo.toml Cargo.lock go.mod go.sum Gemfile Gemfile.lock"
+
+          # Check if any dependency files changed
+          DEPS_CHANGED=false
+          CHANGED_DEPS=""
+          for file in $DEP_FILES; do
+            if echo "$CHANGED" | grep -q "$file"; then
+              DEPS_CHANGED=true
+              CHANGED_DEPS="$CHANGED_DEPS $file"
+            fi
+          done
+
+          echo "deps_changed=$DEPS_CHANGED" >> $GITHUB_OUTPUT
+          if [ "$DEPS_CHANGED" = "true" ]; then
+            echo "Changed dependency files:$CHANGED_DEPS"
+          fi
+
+      - name: Verify Socket check in PR description
+        if: steps.deps.outputs.deps_changed == 'true'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if echo "$PR_BODY" | grep -qE "SOCKET_CHECK:|/socket summary"; then
+            echo "✓ Socket check documentation found in PR description"
+            exit 0
+          fi
+
+          echo "::error::Dependency files were modified but no Socket check found in PR description."
+          echo ""
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  This PR modifies dependency files."
+          echo "  Please run /socket and document the results."
+          echo "═══════════════════════════════════════════════════════════════"
+          echo ""
+          echo "Steps to fix:"
+          echo "1. Run /socket on the changed/added dependencies"
+          echo "2. Add the results to your PR description"
+          echo ""
+          echo "Example format to add to PR description:"
+          echo ""
+          echo "  SOCKET_CHECK: clean"
+          echo "  Package: lodash@4.17.21"
+          echo "  Issues: 0 critical, 0 moderate"
+          echo "  Details: none"
+          echo ""
+          echo "Or for multiple packages:"
+          echo ""
+          echo "  SOCKET_CHECK: summary"
+          echo "  Packages checked: 3"
+          echo "  Results: 3 clean, 0 moderate, 0 critical"
+          echo ""
+          exit 1
