@@ -45,10 +45,17 @@ curl -o ~/.claude/skills/socket/SKILL.md --create-dirs \
   https://raw.githubusercontent.com/dc-larsen/socket-claude-guardrails/main/.claude/skills/socket/SKILL.md
 ```
 
-Now `/socket` is available in Claude Code. It works best with the [Socket CLI](https://docs.socket.dev/docs/socket-cli):
+Now `/socket` is available in Claude Code. It requires the [Socket CLI](https://docs.socket.dev/docs/socket-cli) with authentication:
 
 ```bash
+# Install CLI
 npm install -g @socketsecurity/cli
+
+# Set API key (get from socket.dev dashboard)
+export SOCKET_API_KEY=sktsec_your_token_here
+
+# Verify
+socket npm/lodash
 ```
 
 See [docs/socket-skill-spec.md](docs/socket-skill-spec.md) for the full interface specification.

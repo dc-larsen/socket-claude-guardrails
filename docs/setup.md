@@ -38,21 +38,38 @@ curl -o .claude/skills/socket/SKILL.md \
 
 ### Install Socket CLI (Recommended)
 
-The skill works best with the Socket CLI installed:
+The skill works best with the Socket CLI installed and authenticated.
 
+**1. Install the CLI:**
 ```bash
 npm install -g @socketsecurity/cli
 ```
 
-Verify it works:
+**2. Get an API key:**
+- Sign up or log in at [socket.dev](https://socket.dev)
+- Go to Settings > API Tokens
+- Generate a new token
 
+**3. Authenticate:**
 ```bash
-socket npm info lodash
+export SOCKET_API_KEY=sktsec_your_token_here
 ```
+
+Or add to your shell profile (`~/.zshrc` or `~/.bashrc`):
+```bash
+echo 'export SOCKET_API_KEY=sktsec_your_token_here' >> ~/.zshrc
+```
+
+**4. Verify it works:**
+```bash
+socket npm/lodash
+```
+
+You should see your org name in the banner (e.g., `org: your-org-name`).
 
 ### Alternative: Manual Checks
 
-If you prefer not to install the CLI, the skill will guide you to check packages at [socket.dev](https://socket.dev) manually.
+Without the CLI, you can check packages manually at [socket.dev](https://socket.dev). The skill will provide direct links when CLI access is unavailable.
 
 ## Step 3: Add Claude Rules (Optional)
 

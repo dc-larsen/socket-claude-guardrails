@@ -33,32 +33,42 @@ Determine what to check:
 - Otherwise, treat arguments as npm package names
 - If no arguments, check the project's package.json or requirements.txt
 
-### 2. Run Socket CLI (if available)
+### 2. Run Socket CLI (requires auth)
 
-Try using the Socket CLI first:
+The Socket CLI requires authentication. Users must:
+1. Have the CLI installed: `npm install -g @socketsecurity/cli`
+2. Have a Socket account and API key
+3. Set the `SOCKET_API_KEY` environment variable or run `socket login`
 
+Check a package:
 ```bash
-socket npm info <package>
+socket npm/lodash              # Latest version
+socket npm/lodash@4.17.21      # Specific version
+socket npm/lodash --markdown   # Detailed report
 ```
 
-Or for PyPI:
+For PyPI:
 ```bash
-socket pypi info <package>
+socket pypi/requests
 ```
 
-If the Socket CLI is not installed, fall back to the Socket API or web lookup.
+### 3. Fallback (no CLI or no auth)
 
-### 3. Check via Socket API (fallback)
+If the Socket CLI is unavailable or not authenticated:
 
-If CLI is unavailable, use the Socket API:
+1. **Direct user to socket.dev**: Ask them to check manually at:
+   - npm: https://socket.dev/npm/package/<package>
+   - PyPI: https://socket.dev/pypi/package/<package>
 
-```bash
-curl -s "https://socket.dev/api/npm/package-info/v1/npm/<package>/overview"
-```
+2. **Use npm registry metadata** (limited info, no Socket scores):
+   ```bash
+   npm view <package> --json
+   ```
 
-Or check the package page directly:
-- npm: https://socket.dev/npm/package/<package>
-- PyPI: https://socket.dev/pypi/package/<package>
+3. **Recommend installing the CLI**:
+   - Sign up at https://socket.dev
+   - Generate an API key in dashboard
+   - `export SOCKET_API_KEY=<your-key>`
 
 ### 4. Evaluate Results
 
